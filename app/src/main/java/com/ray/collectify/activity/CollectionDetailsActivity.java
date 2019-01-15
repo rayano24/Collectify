@@ -67,7 +67,10 @@ public class CollectionDetailsActivity extends AppCompatActivity {
         String collectionImageUrl = prefs.getString(KEY_COLLECTION_IMAGE_URL, null);;
 
 
-        getSupportActionBar().setTitle(collectionName);
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(collectionName);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorControl));
+        setSupportActionBar(toolbar);
 
         collectionDetailsRecycler = findViewById(R.id.collectionDetailsRecycler);
         collectionTitleView = findViewById(R.id.collectionTitle);
@@ -83,6 +86,14 @@ public class CollectionDetailsActivity extends AppCompatActivity {
 
 
 
+
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
 
         collectionDetailsAdapter = new CollectionDetailsAdapter(collectionDetailsList);

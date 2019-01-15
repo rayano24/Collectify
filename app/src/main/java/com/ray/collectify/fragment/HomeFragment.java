@@ -107,14 +107,6 @@ public class HomeFragment extends Fragment {
     }
 
 
-    // If the user moves to the TripActivity and leaves the trip, it should not be listed in upcoming anymore, so a refresh is needed
-    @Override
-    public void onResume() {
-        super.onResume();
-        displayCollectionList();
-
-    }
-
 
     /**
      * An async method that retrieves each collection title and ID and stores it in the collectionList
