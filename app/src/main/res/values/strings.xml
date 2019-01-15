@@ -1,0 +1,14 @@
+<resources>
+
+    <!-- MANIFEST LABELS -->
+
+    <string name="app_name">Collectify</string>
+    <string name="title_activity_collection_dertails">Collection Details</string>
+
+
+    <!-- NAVIGATION MENU -->
+    <string name="navigation_home">Home</string>
+    <string name="navigation_settings">Settings</string>
+
+
+</resources>
