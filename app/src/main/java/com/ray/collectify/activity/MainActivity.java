@@ -1,22 +1,20 @@
 package com.ray.collectify.activity;
 
 
-import androidx.annotation.NonNull;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.ray.collectify.fragment.HomeFragment;
-import com.ray.collectify.R;
-import com.ray.collectify.fragment.SettingsFragment;
-
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toolbar;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.ray.collectify.R;
+import com.ray.collectify.fragment.AboutFragment;
+import com.ray.collectify.fragment.CollectionFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 /**
  * This class is responsible for handling the bottom navigation view and switching between fragments based on nav selections.
@@ -27,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
     //List that holds the fragments
     private List<Fragment> fragments = new ArrayList<>(2);
 
-    private static final String TAG_FRAGMENT_HOME = "tag_frag_home";
-    private static final String TAG_FRAGMENT_SETTINGS = "tag_frag_settings";
+    private static final String TAG_FRAGMENT_COLLECTION = "tag_frag_collection";
+    private static final String TAG_FRAGMENT_ABOUT = "tag_frag_about";
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -37,11 +35,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    switchFragment(0, TAG_FRAGMENT_HOME);
+                case R.id.navigation_collection:
+                    switchFragment(0, TAG_FRAGMENT_COLLECTION);
                     return true;
-                case R.id.navigation_settings:
-                    switchFragment(1, TAG_FRAGMENT_SETTINGS);
+                case R.id.navigation_about:
+                    switchFragment(1, TAG_FRAGMENT_ABOUT);
                     return true;
             }
             return false;
@@ -50,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // app theme must be set as the theme is set to the splash screen initially
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -61,8 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         buildFragmentsList();
 
-
-        switchFragment(0, TAG_FRAGMENT_HOME);
+        switchFragment(0, TAG_FRAGMENT_COLLECTION);
 
     }
 
@@ -76,23 +75,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void buildFragmentsList() {
-        HomeFragment homeFragment = buildHomeFragment(getResources().getString(R.string.navigation_home));
-        SettingsFragment settingsFragment = buildSettingsFragment(getResources().getString(R.string.navigation_settings));
+        CollectionFragment collectionFragment = buildCollectionFragment();
+        AboutFragment aboutFragment = buildAboutFragment();
 
-        fragments.add(homeFragment);
-        fragments.add(settingsFragment);
+        fragments.add(collectionFragment);
+        fragments.add(aboutFragment);
     }
 
-    private HomeFragment buildHomeFragment(String title) {
-        HomeFragment fragment = new HomeFragment();
+    private CollectionFragment buildCollectionFragment() {
+        CollectionFragment fragment = new CollectionFragment();
         Bundle bundle = new Bundle();
         fragment.setArguments(bundle);
         return fragment;
     }
 
 
-    private SettingsFragment buildSettingsFragment(String title) {
-        SettingsFragment fragment = new SettingsFragment();
+    private AboutFragment buildAboutFragment() {
+        AboutFragment fragment = new AboutFragment();
         Bundle bundle = new Bundle();
         fragment.setArguments(bundle);
         return fragment;

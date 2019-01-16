@@ -1,25 +1,21 @@
 package com.ray.collectify.model;
 
-import android.graphics.drawable.Drawable;
-import android.widget.ImageView;
-
 /**
- * Constructor for the collection class used in recyclerView.
+ * Model for the collection details class which is used in the recycler view to display a specific product's title, inventory and image. It also lists the collection title.
  */
 public class CollectionDetails {
 
-    private String collectionName, productName, productImage;
+    private String collectionName, productName, productImageUrl;
     private int productInventory;
 
     public CollectionDetails() {
     }
 
-    public CollectionDetails(String collectionName, String productName, int productInventory, String productImage) {
+    public CollectionDetails(String collectionName, String productName, int productInventory, String productImageUrl) {
         this.collectionName = collectionName;
         this.productName = productName;
         this.productInventory = productInventory;
-        this.productImage = productImage;
-
+        this.productImageUrl = productImageUrl;
 
 
     }
@@ -28,39 +24,20 @@ public class CollectionDetails {
         return collectionName;
     }
 
-    public void setCollectionName(String collectionName) {
-        this.collectionName = collectionName;
-    }
-
 
     public int getProductInventory() {
         return productInventory;
     }
-
-    public void setProductInventory(int productInventory) {
-        this.productInventory = productInventory;
-    }
-
 
 
     public String getProductName() {
         return productName;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+
+    public String getProductImageUrl() {
+        return productImageUrl;
     }
-
-
-    public String getProductImage() {
-        return productImage;
-    }
-
-    public void setProductImage(String imageLink) {
-        this.productImage = imageLink;
-    }
-
-
 
 
 }

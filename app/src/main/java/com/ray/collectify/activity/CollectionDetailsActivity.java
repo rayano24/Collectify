@@ -1,25 +1,20 @@
 package com.ray.collectify.activity;
 
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.ray.collectify.CollectionAdapter;
-import com.ray.collectify.CollectionDetailsAdapter;
 import com.ray.collectify.R;
-import com.ray.collectify.RecyclerTouchListener;
+import com.ray.collectify.adapters.CollectionAdapter;
+import com.ray.collectify.adapters.CollectionDetailsAdapter;
 import com.ray.collectify.model.Collection;
 import com.ray.collectify.model.CollectionDetails;
 import com.ray.collectify.utils.HttpUtils;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,23 +31,25 @@ import cz.msebera.android.httpclient.Header;
 
 
 /**
- * Displays details of a specific trip and gives the user options to message a driver, leave a trip, or rate it.
+ * Displays specific products of a collection as well as a header with the collection image, title and description.
  */
 public class CollectionDetailsActivity extends AppCompatActivity {
 
 
+    // recycler related elements
+
     private List<CollectionDetails> collectionDetailsList = new ArrayList<>();
+    private List<Collection> collectionDetailsHeaderList = new ArrayList<>();
     private CollectionDetailsAdapter collectionDetailsAdapter;
-    private RecyclerView collectionDetailsRecycler;
+    private CollectionAdapter collectionDetailsHeaderAdapter;
+    private RecyclerView collectionDetailsRecycler, collectionDetailsHeaderRecycler;
 
-    private TextView collectionTitleView, collectionDescriptionView;
-    private ImageView collectionImageView;
+    // preference keys
 
-
-    private final String KEY_COLLECTION_NAME = "colName";
-    private final String KEY_COLLECTION_ID = "colID";
-    private final String KEY_COLLECTION_IMAGE_URL = "colImageUrl";
-    private final String KEY_COLLECTION_DESCRIPTION = "colDescription";
+    private static final String KEY_COLLECTION_NAME = "colName";
+    private static final String KEY_COLLECTION_ID = "colID";
+    private static final String KEY_COLLECTION_IMAGE_URL = "colImageUrl";
+    private static final String KEY_COLLECTION_DESCRIPTION = "colDescription";
 
 
     @Override
@@ -63,31 +60,45 @@ public class CollectionDetailsActivity extends AppCompatActivity {
 
         String collectionName = prefs.getString(KEY_COLLECTION_NAME, null);
         long collectionID = prefs.getLong(KEY_COLLECTION_ID, -1);
-        String collectionDescription = prefs.getString(KEY_COLLECTION_DESCRIPTION, null);;
-        String collectionImageUrl = prefs.getString(KEY_COLLECTION_IMAGE_URL, null);;
+        String collectionDescription = prefs.getString(KEY_COLLECTION_DESCRIPTION, null);
+        String collectionImageUrl = prefs.getString(KEY_COLLECTION_IMAGE_URL, null);
 
 
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+
+        // updating the toolbar title with the collection name
         toolbar.setTitle(collectionName);
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorControl));
         setSupportActionBar(toolbar);
 
+        // configuring the recycler views for the collection header and product list
+
         collectionDetailsRecycler = findViewById(R.id.collectionDetailsRecycler);
-        collectionTitleView = findViewById(R.id.collectionTitle);
-        collectionDescriptionView = findViewById(R.id.collectionDescription);
-        collectionImageView = findViewById(R.id.collectionImage);
+        collectionDetailsHeaderRecycler = findViewById(R.id.collectionDetailsHeaderRecycler);
+
+        collectionDetailsHeaderAdapter = new CollectionAdapter(collectionDetailsHeaderList);
+        collectionDetailsAdapter = new CollectionDetailsAdapter(collectionDetailsList);
 
 
-        collectionTitleView.setText(collectionName);
-        collectionDescriptionView.setText(collectionDescription);
-        Picasso.get().load(collectionImageUrl).into(collectionImageView);
+        // setting up the layout managers
+
+        RecyclerView.LayoutManager collectionDetailsRecyclerLm = new LinearLayoutManager(CollectionDetailsActivity.this);
+        RecyclerView.LayoutManager collectionDetailsHeaderRecyclerLm = new LinearLayoutManager(CollectionDetailsActivity.this);
+
+        collectionDetailsHeaderRecycler.setLayoutManager(collectionDetailsHeaderRecyclerLm);
+        collectionDetailsRecycler.setLayoutManager(collectionDetailsRecyclerLm);
+
+        collectionDetailsHeaderRecycler.setItemAnimator(new DefaultItemAnimator());
+        collectionDetailsRecycler.setItemAnimator(new DefaultItemAnimator());
+
+        collectionDetailsHeaderRecycler.setAdapter(collectionDetailsHeaderAdapter);
+        collectionDetailsRecycler.setAdapter(collectionDetailsAdapter);
+
+        // adding elements to the collection header
+        collectionDetailsHeaderList.add(new Collection(collectionName, collectionID, collectionDescription, collectionImageUrl));
 
 
-
-
-
-
-
+        // returns to the paused activity (main in this case) when pressing the back button
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,22 +107,19 @@ public class CollectionDetailsActivity extends AppCompatActivity {
         });
 
 
-        collectionDetailsAdapter = new CollectionDetailsAdapter(collectionDetailsList);
-
-
-        RecyclerView.LayoutManager collectionDetailsLayoutManager = new LinearLayoutManager(CollectionDetailsActivity.this);
-        collectionDetailsRecycler.setLayoutManager(collectionDetailsLayoutManager);
-        collectionDetailsRecycler.setItemAnimator(new DefaultItemAnimator());
-        collectionDetailsRecycler.setAdapter(collectionDetailsAdapter);
-
-
         loadProductList(collectionID, collectionName);
 
 
     }
 
 
-    public void loadProductList(long id, final String collectionName) {
+    /**
+     * An async call that is responsible for loading the list of products for a specific collection.
+     *
+     * @param id             a long representing the collection ID
+     * @param collectionName a string representing the collection name
+     */
+    private void loadProductList(long id, final String collectionName) {
 
 
         HttpUtils.get("admin/collects.json?collection_id=" + Long.toString(id) + "&page=1&access_token=c32313df0d0ef512ca64d5b336a0d7c6", new RequestParams(), new JsonHttpResponseHandler() {
@@ -122,17 +130,21 @@ public class CollectionDetailsActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 
+                // this is not particularly necessary, as this is a singular activity, however done in case
+                collectionDetailsList.clear();
+
                 try {
 
-                    JSONArray array = response.getJSONArray("collects");
+                    JSONArray collectsList = response.getJSONArray("collects");
 
-                    // parse all the data needed and put each trip one by one into the recycler view, if it is empty, display the error message
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject obj = array.getJSONObject(i);
+                    for (int collectsIndex = 0; collectsIndex < collectsList.length(); collectsIndex++) {
+
+                        JSONObject obj = collectsList.getJSONObject(collectsIndex);
                         long productID = obj.getLong("product_id");
 
-                        // TODO, please improve this in a future iteration, it may be bad practice
+                        // TODO, potentially poor practice, please look into improving in the future
 
+                        // this now looks into retrieving the specific products from the collection
                         HttpUtils.get("admin/products.json?ids=" + Long.toString(productID) + "&page=1&access_token=c32313df0d0ef512ca64d5b336a0d7c6", new RequestParams(), new JsonHttpResponseHandler() {
                             @Override
                             public void onFinish() {
@@ -142,49 +154,41 @@ public class CollectionDetailsActivity extends AppCompatActivity {
                             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 
                                 try {
-                                    //   collectionList.clear();
 
                                     JSONArray productsArray = response.getJSONArray("products");
-                                    JSONObject imageObject = null;
 
 
-
-
-
-                                    // parse all the data needed and put each trip one by one into the recycler view, if it is empty, display the error message
-                                    for (int i = 0; i < productsArray.length(); i++) {
-                                        JSONObject product = productsArray.getJSONObject(i);
+                                    for (int productIndex = 0; productIndex < productsArray.length(); productIndex++) {
+                                        JSONObject product = productsArray.getJSONObject(productIndex);
                                         String productTitle = product.getString("title");
+                                        JSONObject imageObject = product.getJSONObject("image");
 
+
+                                        // in order to get the overall product inventory, we must check the inventory of each variant of the product
                                         JSONArray variantsArray = product.getJSONArray("variants");
-
-                                        imageObject = product.getJSONObject("image");
 
                                         int inventory = 0;
 
-                                        for(int j = 0; j < variantsArray.length(); j++) {
+                                        for (int variantIndex = 0; variantIndex < variantsArray.length(); variantIndex++) {
 
-                                            inventory += variantsArray.getJSONObject(i).getInt("inventory_quantity");
-
-                                        }
-
-
-
-                                        if(imageObject != null) {
-
-                                            String imageUrl = imageObject.getString("src");
-                                            String formattedUrl = imageUrl.replaceAll("(?<!https:)//", "/");
-
-
-                                            collectionDetailsList.add(new CollectionDetails(collectionName, productTitle, inventory, formattedUrl));
-
-                                        }
-                                        else {
-                                            collectionDetailsList.add(new CollectionDetails(collectionName, productTitle, inventory, "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg"));
-
+                                            inventory += variantsArray.getJSONObject(variantIndex).getInt("inventory_quantity");
 
                                         }
 
+
+                                        if (imageObject != null) {
+                                            // removing the escape chars so that the image can be loaded
+                                            String imageUrl = imageObject.getString("src").replaceAll("(?<!https:)//", "/");
+
+
+                                            collectionDetailsList.add(new CollectionDetails(collectionName, productTitle, inventory, imageUrl));
+
+                                        } else {
+                                            // if there is no image, this points to an image that displays "no image available"
+                                            collectionDetailsList.add(new CollectionDetails(collectionName, productTitle, inventory, getResources().getString(R.string.details_activity_no_image_url)));
+
+
+                                        }
 
 
                                     }
@@ -200,7 +204,7 @@ public class CollectionDetailsActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                Toast.makeText(CollectionDetailsActivity.this, "There was a network error, try again later.", Toast.LENGTH_LONG).show(); // generic network error
+                                Toast.makeText(CollectionDetailsActivity.this, getResources().getString(R.string.general_network_error), Toast.LENGTH_LONG).show(); // generic network error
 
 
                             }
@@ -210,6 +214,9 @@ public class CollectionDetailsActivity extends AppCompatActivity {
                     }
 
                     collectionDetailsAdapter.notifyDataSetChanged();
+                    // this was done to prevent the slow loading in. there is a load in delay due to the nature of the above request
+                    collectionDetailsRecycler.setVisibility(View.VISIBLE);
+
 
 
                 } catch (JSONException e) {
@@ -217,11 +224,13 @@ public class CollectionDetailsActivity extends AppCompatActivity {
                 }
 
 
+
+
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(CollectionDetailsActivity.this, "There was a network error, try again later.", Toast.LENGTH_LONG).show(); // generic network error
+                Toast.makeText(CollectionDetailsActivity.this, getResources().getString(R.string.general_network_error), Toast.LENGTH_LONG).show(); // generic network error
 
 
             }
@@ -229,12 +238,6 @@ public class CollectionDetailsActivity extends AppCompatActivity {
         });
     }
 
-
-    public void getProduct(long productID, final String collectionName) {
-
-
-
-    }
 
 }
 

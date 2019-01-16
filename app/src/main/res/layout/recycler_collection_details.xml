@@ -11,35 +11,36 @@
 
 
     <TextView
-        android:id="@+id/detail_product_name"
+        android:id="@+id/detailProductName"
         android:layout_width="120dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Product Name"
+        android:text="@string/misc_placeholder_title"
         android:textAlignment="center"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/detail_product_image"
+        app:layout_constraintStart_toEndOf="@+id/detailProductImage"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/detail_product_inventory"
+        android:id="@+id/detailProductInventory"
         android:layout_width="100dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="49 units"
+        android:text="@string/misc_placeholder_title"
         android:textAlignment="center"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/detail_product_name"
+        app:layout_constraintStart_toEndOf="@+id/detailProductName"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/detail_product_image"
+        android:id="@+id/detailProductImage"
         android:layout_width="140dp"
         android:layout_height="140dp"
+        android:contentDescription="@string/content_desc_product"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -47,22 +48,20 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/detail_collection_name"
+        android:id="@+id/detailCollectionName"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-
         android:layout_marginBottom="8dp"
-        android:text="From the Collection Name"
+        android:text="@string/misc_placeholder_title"
         android:textSize="14sp"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/detail_product_inventory"
-        app:layout_constraintStart_toStartOf="@+id/detail_product_name"
-        app:layout_constraintTop_toBottomOf="@+id/detail_product_name" />
-
+        app:layout_constraintEnd_toEndOf="@+id/detailProductInventory"
+        app:layout_constraintStart_toStartOf="@+id/detailProductName"
+        app:layout_constraintTop_toBottomOf="@+id/detailProductName" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

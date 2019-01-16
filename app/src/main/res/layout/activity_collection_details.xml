@@ -33,56 +33,24 @@
 
 
         <LinearLayout
-            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="58dp">
+            android:paddingTop="@dimen/activity_details_padding_top">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/collectionDetailsHeaderRecycler"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content"
+                    android:scrollbars="vertical"
+                    android:visibility="visible"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/recycler_collections" />
 
-                    <ImageView
-                        android:id="@+id/collectionImage"
-                        android:layout_width="140dp"
-                        android:layout_height="140dp"
-
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:srcCompat="@tools:sample/avatars" />
-
-                    <TextView
-                        android:id="@+id/collectionTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-
-                        android:layout_marginTop="8dp"
-                        android:text="TextView"
-                        android:textSize="18sp"
-                        app:layout_constraintStart_toStartOf="@+id/collectionDescription"
-                        app:layout_constraintTop_toTopOf="@+id/collectionImage" />
-
-                    <TextView
-                        android:id="@+id/collectionDescription"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="24dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginEnd="8dp"
-                        android:text="Answer misery adieus add wooded how nay men before though. Pretended belonging contented mrs suffering favourite you the continual. "
-                        android:textSize="16sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/collectionImage"
-                        app:layout_constraintTop_toBottomOf="@+id/collectionTitle" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
 
@@ -91,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="vertical"
-                android:visibility="visible"
+                android:visibility="gone"
                 tools:itemCount="37"
                 tools:listitem="@layout/recycler_collection_details" />
 
