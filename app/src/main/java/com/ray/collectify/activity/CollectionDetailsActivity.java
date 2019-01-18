@@ -218,12 +218,9 @@ public class CollectionDetailsActivity extends AppCompatActivity {
                     collectionDetailsRecycler.setVisibility(View.VISIBLE);
 
 
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
 
 
             }

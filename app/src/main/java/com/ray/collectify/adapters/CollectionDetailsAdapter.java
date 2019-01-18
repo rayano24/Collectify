@@ -1,8 +1,5 @@
 package com.ray.collectify.adapters;
 
-
-//Recycler view adapter for workout history
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

@@ -8,8 +8,6 @@ public class CollectionDetails {
     private String collectionName, productName, productImageUrl;
     private int productInventory;
 
-    public CollectionDetails() {
-    }
 
     public CollectionDetails(String collectionName, String productName, int productInventory, String productImageUrl) {
         this.collectionName = collectionName;

@@ -8,9 +8,6 @@ public class Collection {
     private String collectionName, collectionDescription, collectionImageUrl;
     private long collectionID;
 
-    public Collection() {
-    }
-
     public Collection(String collectionName, long collectionID, String collectionDescription, String collectionImageUrl) {
         this.collectionName = collectionName;
         this.collectionID = collectionID;

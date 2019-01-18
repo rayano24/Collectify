@@ -1,8 +1,12 @@
 package com.ray.collectify.fragment;
 
 
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -34,7 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Displays the user's trips and allows them to open an individual trip as an instance of TripActivity
+ * Displays all collections parsed from JSON
  */
 public class CollectionFragment extends Fragment {
 
@@ -54,11 +58,15 @@ public class CollectionFragment extends Fragment {
     private final String KEY_COLLECTION_DESCRIPTION = "colDescription";
 
 
+    // necessary for preventing illegalstateexception due to unattached context
+    private Activity mActivity;
+
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_collection, container, false);
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
 
 
         // setting up the recycler view
@@ -67,14 +75,14 @@ public class CollectionFragment extends Fragment {
 
         collectionAdapter = new CollectionAdapter(collectionList);
 
-        RecyclerView.LayoutManager pastLayoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager pastLayoutManager = new LinearLayoutManager(mActivity);
         collectionRecycler.setLayoutManager(pastLayoutManager);
         collectionRecycler.setItemAnimator(new DefaultItemAnimator());
         collectionRecycler.setAdapter(collectionAdapter);
 
 
         // Click listener for collection selection
-        collectionRecycler.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), collectionRecycler, new RecyclerTouchListener.ClickListener() {
+        collectionRecycler.addOnItemTouchListener(new RecyclerTouchListener(mActivity, collectionRecycler, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
                 Collection collection = collectionList.get(position);
@@ -84,7 +92,7 @@ public class CollectionFragment extends Fragment {
                 prefs.edit().putString(KEY_COLLECTION_DESCRIPTION, collection.getCollectionDescription()).apply();
                 prefs.edit().putString(KEY_COLLECTION_IMAGE_URL, collection.getCollectionImageUrl()).apply();
 
-                Intent I = new Intent(getActivity(), CollectionDetailsActivity.class);
+                Intent I = new Intent(mActivity, CollectionDetailsActivity.class);
                 startActivity(I);
             }
 
@@ -99,6 +107,28 @@ public class CollectionFragment extends Fragment {
 
         return rootView;
 
+    }
+
+
+    @TargetApi(23)
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        this.mActivity = (Activity) context;
+
+    }
+
+    // deprecated below API 23, min API is lollipop (21)
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            this.mActivity = activity;
+
+        }
     }
 
 
@@ -135,7 +165,7 @@ public class CollectionFragment extends Fragment {
                             collectionList.add(new Collection(title, id, description, imageUrl));
                         } else {
                             // if there is no description, set a generic statement to update it on the shopify admin panel
-                            collectionList.add(new Collection(title, id, getResources().getString(R.string.collection_fragment_no_description), imageUrl));
+                            collectionList.add(new Collection(title, id, mActivity.getResources().getString(R.string.collection_fragment_no_description), imageUrl));
                         }
 
 
@@ -152,7 +182,7 @@ public class CollectionFragment extends Fragment {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject
                     errorResponse) {
-                Toast.makeText(getActivity(), getResources().getString(R.string.general_network_error), Toast.LENGTH_LONG).show(); // generic network error
+                Toast.makeText(mActivity, mActivity.getResources().getString(R.string.general_network_error), Toast.LENGTH_LONG).show(); // generic network error
             }
         });
 
