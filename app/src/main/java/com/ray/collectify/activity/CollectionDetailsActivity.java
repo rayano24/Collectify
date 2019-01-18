@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -68,7 +69,7 @@ public class CollectionDetailsActivity extends AppCompatActivity {
 
         // updating the toolbar title with the collection name
         toolbar.setTitle(collectionName);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.colorControl));
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.colorControl));
         setSupportActionBar(toolbar);
 
         // configuring the recycler views for the collection header and product list
@@ -107,7 +108,7 @@ public class CollectionDetailsActivity extends AppCompatActivity {
         });
 
 
-        loadProductList(collectionID, collectionName);
+        loadProductList(collectionID, collectionName, collectionImageUrl);
 
 
     }
@@ -119,7 +120,7 @@ public class CollectionDetailsActivity extends AppCompatActivity {
      * @param id             a long representing the collection ID
      * @param collectionName a string representing the collection name
      */
-    private void loadProductList(long id, final String collectionName) {
+    private void loadProductList(long id, final String collectionName, final String collectionImageUrl) {
 
 
         HttpUtils.get("admin/collects.json?collection_id=" + Long.toString(id) + "&page=1&access_token=c32313df0d0ef512ca64d5b336a0d7c6", new RequestParams(), new JsonHttpResponseHandler() {
@@ -161,7 +162,6 @@ public class CollectionDetailsActivity extends AppCompatActivity {
                                     for (int productIndex = 0; productIndex < productsArray.length(); productIndex++) {
                                         JSONObject product = productsArray.getJSONObject(productIndex);
                                         String productTitle = product.getString("title");
-                                        JSONObject imageObject = product.getJSONObject("image");
 
 
                                         // in order to get the overall product inventory, we must check the inventory of each variant of the product
@@ -176,19 +176,7 @@ public class CollectionDetailsActivity extends AppCompatActivity {
                                         }
 
 
-                                        if (imageObject != null) {
-                                            // removing the escape chars so that the image can be loaded
-                                            String imageUrl = imageObject.getString("src").replaceAll("(?<!https:)//", "/");
-
-
-                                            collectionDetailsList.add(new CollectionDetails(collectionName, productTitle, inventory, imageUrl));
-
-                                        } else {
-                                            // if there is no image, this points to an image that displays "no image available"
-                                            collectionDetailsList.add(new CollectionDetails(collectionName, productTitle, inventory, getResources().getString(R.string.details_activity_no_image_url)));
-
-
-                                        }
+                                        collectionDetailsList.add(new CollectionDetails(collectionName, productTitle, inventory, collectionImageUrl));
 
 
                                     }

@@ -31,10 +31,6 @@ public class Collection {
         return collectionDescription;
     }
 
-    public void setCollectionDescription(String description) {
-        this.collectionDescription = description;
-    }
-
 
     public String getCollectionImageUrl() {
         return collectionImageUrl;

@@ -18,10 +18,6 @@
     <!-- FRAGMENTS & ACTIVITIES -->
 
 
-    <!-- COLLECTION DETAILS ACTIVITY -->
-
-    <string name="details_activity_no_image_url">https://www.freeiconspng.com/uploads/no-image-icon-15.png</string>
-
     <!-- COLLECTION FRAGMENT -->
 
     <string name="collection_fragment_no_description">No description available. Please visit your Shopify admin page to configure one.</string>
