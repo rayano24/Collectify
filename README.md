@@ -8,6 +8,11 @@ Collectify is a simple Android application intended to display a collection list
 An exercise in the use of recyclerviews, as well as REST to fetch data (although I do not recommend using loopj in production builds and my use of nested get requests may not be ideal).
 Feel free to also use it as a basic bottom navigation template.
 
+## TESTING WITHOUT ANDROID STUDIO
+
+Simply download and install the APK file in the APK folder and install it on your device (API 21 (Lolipop) required).
+You may need to enable downloads outside the play store on your devices settings.
+
 ## USAGE
 
 If you plan on using the recycler adapters and plan to load images, you must use Square's Picasso library
